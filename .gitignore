@@ -1,0 +1,15 @@
+### Emacs ###
+# -*- mode: gitignore; -*-
+*~
+\#*\#
+\.\#*
+
+### SwiftPackageManager ###
+Packages
+.build/
+xcuserdata
+DerivedData/
+*.xcodeproj
+
+### MacOS ###
+.DS_Store
