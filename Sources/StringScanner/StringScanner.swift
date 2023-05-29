@@ -7,11 +7,17 @@
 
 import Foundation
 
+/// Scans string from given source.
+/// Class works with `NSString` for performance goal.
 public final class StringScanner {
     
     // MARK: - Types
     
+    /// Index of stored elements
     public typealias Index = Int
+    /// Stores info of scanned data
+    /// - Parameter reached: Indicates whether scaner reached search element or not.
+    /// - Parameter string: Substring accumulated before scanner reached search element.
     public typealias ScanUpResult = (reached: Bool, string: String)
     
     // MARK: - Constants
@@ -27,32 +33,47 @@ public final class StringScanner {
     
     // MARK: - Properties
     
+    /// Provides access to string.
     private var source: StringSource
     
+    /// Length of the scanning source.
+    /// - warning: provides count of Unicode characters count, same as **NSString.length**.
     public var length: Int {
         source.length
     }
-        
+    
+    /// Indicates when scanner has achieved end of the source.
     public var isAtEnd: Bool {
         source.index >= length
     }
     
+    /// Current index in scanning source.
     public var index: Int {
         source.index
     }
     
+    /// Character set containing the characters the scanner ignores when looking for a scannable element.
     public var charactersToBeSkipped: CharacterSet? = .whitespacesAndNewlines
     
+    /// Flag that indicates whether the receiver distinguishes case in the characters it scans.
     public var caseSensitive: Bool = false
     
+    /// Returns a `StringScanner` with specified source.
+    /// - Parameter source: Provides consecutive access to string
     public init(_ source: StringSource) {
         self.source = source
     }
     
+    /// Returns a `StringScanner` with specified string
+    /// - Parameter string: String to scan
     public convenience init(string: String) {
         self.init(StringRawSource(string))
     }
     
+    /// Loads file contants from specified `URL` and returns `StringScanner`
+    /// - Parameters:
+    ///   - url: `URL` to load file
+    ///   - encoding: String encoding
     public convenience init(
         file url: URL,
         encoding: String.Encoding = .utf8
@@ -71,6 +92,8 @@ public final class StringScanner {
 
     // MARK: - Seek
     
+    /// Change current index
+    /// - Parameter index: New index
     public func seek(to index: Int) {
         assert(
             index >= 0 && index <= length,
@@ -82,6 +105,9 @@ public final class StringScanner {
     
     // MARK: - Substring
     
+    /// Get character at specified index
+    /// - Parameter index: Index of the character
+    /// - Returns: Character stored at index
     public subscript(_ index: Index) -> Character {
         assert(
             index >= 0 && index <= length,
@@ -96,6 +122,9 @@ public final class StringScanner {
         return character
     }
     
+    /// Get substring in specified range
+    /// - Parameter index: Index of the character
+    /// - Returns: Character stored at index
     public subscript(_ range: Range<Index>) -> String {
         let prevIndex = source.index
         source.seekTo(range.lowerBound, origin: .start)
@@ -107,6 +136,9 @@ public final class StringScanner {
     
     // MARK: - Scanning Up
     
+    /// Scans the string until a character from a given character set is encountered, accumulating characters into a string that's returned.
+    /// - Parameter set: The set of characters up to which to scan.
+    /// - Returns: Result that stores scan info
     public func scanUpToCharacters(from set: CharacterSet) -> ScanUpResult {
         guard !set.isEmpty else {
             assertionFailure("Character set should not be empty")
@@ -140,6 +172,9 @@ public final class StringScanner {
         return (reached, string)
     }
     
+    /// Scans the string until a given string is encountered, accumulating characters into a string that's returned.
+    /// - Parameter substring: The 
+    /// - Returns: Result that stores scan info
     public func scanUpToString(_ substring: String) -> ScanUpResult {
         guard !substring.isEmpty else {
             assertionFailure("Substring should not be empty")
@@ -197,13 +232,18 @@ public final class StringScanner {
     }
     
     // MARK: - Scanning
-        
+    
+    /// Scans next characters and returns it
+    /// - Returns: Character stored at current index
     public func scanCharacter() -> Character? {
         guard !isAtEnd else { return nil }
         
         return source.readCharacter()
     }
     
+    /// Scans the string as long as characters from a given character set are encountered, accumulating characters into a string that's returned.
+    /// - Parameter set: The set of characters to scan.
+    /// - Returns: Upon return, contains the characters scanned.
     public func scanCharacters(from set: CharacterSet) -> String? {
         guard !set.isEmpty else {
             assertionFailure("Character set should not be empty")
@@ -230,6 +270,9 @@ public final class StringScanner {
         }
     }
     
+    /// Scans a given string, returning an equivalent  string object if a match is found.
+    /// - Parameter searchString: The string for which to scan at the current scan location.
+    /// - Returns: Upon return, if the receiver contains a string equivalent to `searchString` at the current scan location, contains a string equivalent to `searchString`.
     public func scanString(_ searchString: String) -> String? {
         guard !searchString.isEmpty else {
             assertionFailure("Substring should not be empty")
@@ -260,6 +303,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `Double` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `Double` value if it exists.
     public func scanDouble(representation: NumberRepresentation = .decimal) -> Double? {
         let prevIndex = source.index
         
@@ -275,6 +321,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `Float` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `Float` value if it exists.
     public func scanFloat(representation: NumberRepresentation = .decimal) -> Float? {
         let prevIndex = source.index
         
@@ -290,6 +339,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `Int` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `Int` value if it exists.
     public func scanInt(representation: NumberRepresentation = .decimal) -> Int? {
         let prevIndex = source.index
         
@@ -305,6 +357,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `Int32` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `Int32` value if it exists.
     public func scanInt32(representation: NumberRepresentation = .decimal) -> Int32? {
         let prevIndex = source.index
         
@@ -320,6 +375,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `Int64` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `Int64` value if it exists.
     public func scanInt64(representation: NumberRepresentation = .decimal) -> Int64? {
         let prevIndex = source.index
         
@@ -335,6 +393,9 @@ public final class StringScanner {
         return nil
     }
     
+    /// Scans for a `UInt64` value, returning a found value.
+    /// - Parameter representation: Determines how scanner should read value.
+    /// - Returns: Scanned `UInt64` value if it exists.
     public func scanUInt64(representation: NumberRepresentation = .decimal) -> UInt64? {
         let prevIndex = source.index
         
@@ -351,7 +412,9 @@ public final class StringScanner {
     }
     
     // MARK: - Skipping
-    
+        
+    /// Skip next character.
+    /// - Returns: True if scanner successfully skipped a character.
     @discardableResult
     public func skipCharacter() -> Bool {
         guard !isAtEnd else { return false }
@@ -360,7 +423,10 @@ public final class StringScanner {
         
         return true
     }
-    
+        
+    /// Skip next character if it exists in specified set.
+    /// - Parameter set: Set to characters be skipped.
+    /// - Returns: True if scanner successfully skipped a character.
     @discardableResult
     public func skipCharacter(from set: CharacterSet) -> Bool {
         guard !isAtEnd else { return false }
@@ -374,17 +440,27 @@ public final class StringScanner {
         
         return false
     }
-    
+        
+    /// Skip characters until set contains them.
+    /// - Parameter set: Set to skip characters.
+    /// - Returns: True if scanner successfully skipped any characters.
     @discardableResult
     public func skipCharacters(from set: CharacterSet) -> Bool {
         scanCharacters(from: set) != nil
     }
-        
+            
+    /// Skip specified string.
+    /// - Parameter substring: String to skip.
+    /// - Returns: True if scanner successfully skipped specified substring.
     @discardableResult
     public func skipString(_ substring: String) -> Bool {
         scanString(substring) != nil
     }
-    
+        
+    /// Scans till find any characters stored in the set and skip it.
+    /// Scanner doesn't change index if no characters found.
+    /// - Parameter set: Set to scan up to first character and skip it.
+    /// - Returns: True if scanner successfully skipped any characters.
     @discardableResult
     public func skipUp(from set: CharacterSet) -> Bool {
         guard !set.isEmpty else {
@@ -409,6 +485,10 @@ public final class StringScanner {
         return true
     }
     
+    /// Scans till find specified substring and skips it.
+    /// Scanner doesn't change index if no substring found.
+    /// - Parameter substring: Substring to scan up and skip it.
+    /// - Returns: True if scanner successfully skipped substring.
     @discardableResult
     public func skipUp(to substring: String) -> Bool {
         guard !substring.isEmpty else {
@@ -438,6 +518,8 @@ public final class StringScanner {
     
     // MARK: - Support
     
+    /// Skip current character if `charactersToBeSkipped` contains the character.
+    /// - Returns: True if character was skipped
     func skipIfNeeded() -> Bool {
         guard let charactersToBeSkipped else { return false }
         

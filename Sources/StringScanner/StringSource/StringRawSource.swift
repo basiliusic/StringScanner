@@ -7,10 +7,11 @@
 
 import Foundation
 
+/// Provides consecutive access for stored string
 class StringRawSource: StringSource {
                     
     // MARK: - Properties
-    
+        
     var string: NSString
     var index: Int = 0
     let length: Int
