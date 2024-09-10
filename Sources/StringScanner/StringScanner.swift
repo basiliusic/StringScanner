@@ -34,7 +34,7 @@ public final class StringScanner {
     // MARK: - Properties
     
     /// Provides access to string.
-    private var source: StringSource
+    private let source: StringSource
     
     /// Length of the scanning source.
     /// - warning: provides count of Unicode characters count, same as **NSString.length**.

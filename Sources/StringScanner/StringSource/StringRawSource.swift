@@ -25,20 +25,18 @@ class StringRawSource: StringSource {
     
     // MARK: - StringSource
     
-    func seekTo(_ offset: Int, origin: SeekOrigin) {
-        var index = self.index
-        
+    func seekTo(
+        _ offset: Int,
+        origin: SeekOrigin
+    ) {
         switch origin {
         case .start:
-            index = offset
+            index = min(max(offset, 0), length)
         case .current:
-            index += offset
+            index = min(max(index + offset, 0), length)
         case .end:
-            index = length + offset
+            index = min(max(length + offset, 0), length)
         }
-        
-        self.index = index
-            .clamped(in: 0...length)
     }
     
     func read(_ length: Int) -> NSString {

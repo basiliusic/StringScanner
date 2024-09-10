@@ -6,9 +6,11 @@ import PackageDescription
 let package = Package(
     name: "StringScanner",
     platforms: [
-        .iOS(.v11),
+        .iOS(.v12),
         .macOS(.v10_13),
         .macCatalyst(.v13),
+        .tvOS(.v12),
+        .watchOS(.v4),
     ],
     products: [
         .library(
