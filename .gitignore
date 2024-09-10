@@ -10,6 +10,7 @@ Packages
 xcuserdata
 DerivedData/
 *.xcodeproj
+.swiftpm
 
 ### MacOS ###
 .DS_Store
